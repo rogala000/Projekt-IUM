@@ -15,7 +15,7 @@ elseif strcmp(view,'radiobutton_psd')
     xlabel('Frequency [Hz]')
     ylabel('Amplitude [ ]')
     elseif strcmp(view,'radiobutton_fft')
-    [amp,f,phase] = transformata_fft(signal,fs,T);
+    [amp,f] = transformata_fft(signal,fs,T);
     handles.axes1
     plot(f,amp)
     title('FFT')
@@ -23,8 +23,9 @@ elseif strcmp(view,'radiobutton_psd')
     ylabel('Amplitude [ ]')
 elseif strcmp(view,'radiobutton_spectrogram')
     handles.axes1
-    spectrogram(signal,[],[],[],fs)
-    title('Spectrogram')
+    nakladkowanie = 50;
+    lw = T/10;
+    Spec(signal,fs,T,t,lw,nakladkowanie, hObject, eventdata, handles)
     
 end
 end

@@ -22,7 +22,7 @@ function varargout = Project(varargin)
 
 % Edit the above text to modify the response to help Project
 
-% Last Modified by GUIDE v2.5 20-Mar-2018 14:15:08
+% Last Modified by GUIDE v2.5 09-Apr-2018 16:16:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,11 +68,12 @@ guidata(hObject, handles);
     set(handles.radiobutton_bandpass, 'Value', 0);
 
 
-global x T fs t dt signal;
+global x T fs t dt signal CHECK;
 zoom 'on'
 fs = 100;
 T = 100;
 dt = 1/fs;
+CHECK = 0;
 t=0:dt:T;
 x = sin(2*pi*10 * t) + 0.05 * t;
 
@@ -194,7 +195,7 @@ imshow('placeholder.jpg')
 
 % --- Executes when selected object is changed in uibuttongroup_view.
 function uibuttongroup_view_SelectionChangedFcn(hObject, eventdata, handles)
-global t signal fs T;
+global x T fs t dt signal;
 global view
 view = get(eventdata.NewValue, 'Tag');
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles);
@@ -267,7 +268,24 @@ function pushbutton_record_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_record (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global x T fs t dt signal;
 
+time = str2num(handles.edit_duration.String);
+Fs = str2num(handles.popupmenu_f.String);
+nr = get(handles.popupmenu_f,'Value');
+Fs=Fs(nr);
+recObj = audiorecorder(Fs,16,1);
+recordblocking(recObj, time);
+x = getaudiodata(recObj);
+fs = Fs;
+dt = 1/fs;
+T=time;
+t=0:dt:T;
+t=t(1:length(t)-1);
+%x=x(1:length(t));
+signal = x;
+
+plot(t,signal);
 
 
 function edit_duration_Callback(hObject, eventdata, handles)
@@ -297,6 +315,19 @@ function pushbutton_file_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_file (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global x T fs t dt signal;
+
+[FileName,PathName] = uigetfile('*.wav','Select a .wav file');
+[y,Fs] = audioread([PathName FileName]);
+x = y;
+fs = Fs;
+dt=1/fs;
+T=length(y)/Fs;
+t=0:dt:T;
+t=t(1:length(t)-1);
+
+x=x(1:length(t));
+signal = x;
 
 
 % --- Executes on button press in pushbutton_play.
@@ -304,3 +335,37 @@ function pushbutton_play_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_play (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global signal
+global fs
+global CHECK
+
+if (CHECK == 0)
+soundsc(signal,fs)
+CHECK = 1;
+else
+    clear sound;
+    CHECK = 0;
+end
+
+
+% --- Executes on selection change in popupmenu_f.
+function popupmenu_f_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_f (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_f contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_f
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_f_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_f (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
