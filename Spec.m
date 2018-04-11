@@ -9,7 +9,7 @@ x - analizowany_sygna³
 lw - dlugosc okna w sek
 nakladkowanie - nakladkowanie w %
 %}
-lw_samp=lw*fs;%dlugosc okna w probkach
+lw_samp=ceil(lw*fs);%dlugosc okna w probkach
 noverlap=floor(nakladkowanie/100*lw_samp); %liczba probek podlegajacych nakladkowaniu
 nfft=2^nextpow2(lw_samp);
 temp=0;
