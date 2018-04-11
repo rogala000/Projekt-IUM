@@ -1,4 +1,4 @@
-function [] = rysuj(signal,t,fs,T,view, hObject, eventdata, handles);
+function [] = rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw)
 
 if strcmp(view,'radiobutton_tv')
     handles.axes1
@@ -23,8 +23,8 @@ elseif strcmp(view,'radiobutton_psd')
     ylabel('Amplitude [ ]')
 elseif strcmp(view,'radiobutton_spectrogram')
     handles.axes1
-    nakladkowanie = 50;
-    lw = T/10;
+%     nakladkowanie = 50;
+%     lw = T/10;
     Spec(signal,fs,T,t,lw,nakladkowanie, hObject, eventdata, handles)
     
 end
