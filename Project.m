@@ -181,7 +181,7 @@ global t signal fs T;
 global view
 signal = cumtrapz(t,signal);
 signal = filtrowanie(signal,fs);
-signal(1:4*fs) = 0;
+signal(1:T/10*fs) = 0;
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles);
 
 
@@ -352,7 +352,10 @@ global fs
 global CHECK
 
 if (CHECK == 0)
-soundsc(signal,fs)
+        fplay=44800;
+
+    xplay= resample(signal,fplay,fs);
+soundsc(xplay,fplay)
 CHECK = 1;
 else
     clear sound;
