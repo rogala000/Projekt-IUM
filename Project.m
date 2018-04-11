@@ -273,16 +273,19 @@ global x T fs t dt signal;
 time = str2num(handles.edit_duration.String);
 Fs = str2num(handles.popupmenu_f.String);
 nr = get(handles.popupmenu_f,'Value');
+
 Fs=Fs(nr);
-recObj = audiorecorder(Fs,16,1);
+recObj = audiorecorder(8000,16,1);
 recordblocking(recObj, time);
 x = getaudiodata(recObj);
+%x=x(1:length(t));
+x = resample(x,Fs,8000);
 fs = Fs;
 dt = 1/fs;
 T=time;
 t=0:dt:T;
 t=t(1:length(t)-1);
-%x=x(1:length(t));
+
 signal = x;
 
 plot(t,signal);
@@ -318,15 +321,24 @@ function pushbutton_file_Callback(hObject, eventdata, handles)
 global x T fs t dt signal;
 
 [FileName,PathName] = uigetfile('*.wav','Select a .wav file');
-[y,Fs] = audioread([PathName FileName]);
-x = y;
-fs = Fs;
-dt=1/fs;
-T=length(y)/Fs;
-t=0:dt:T;
-t=t(1:length(t)-1);
+[y,Faudio] = audioread([PathName FileName]);
 
-x=x(1:length(t));
+Fs = str2num(handles.popupmenu_f.String);
+nr = get(handles.popupmenu_f,'Value');
+
+Fs=Fs(nr);
+
+x = y(:,1);
+fs = Fs;
+
+%x=x(1:length(t));
+x = resample(x,fs,Faudio);
+T=length(y)/Faudio;
+dt=1/fs;
+
+t=0:dt:T;
+t=t(1:length(t));
+
 signal = x;
 
 

@@ -8,8 +8,6 @@ N = max(N);
 amp = dft(x);
 amp = abs(amp);
 amp = amp(1:N/2+1);
-if(length(amp)>length(f))
-amp = amp(1:N/2);
-end
+i
 amp = amp/(N/2);
 end
