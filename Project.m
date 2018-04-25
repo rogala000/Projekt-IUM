@@ -69,6 +69,7 @@ guidata(hObject, handles);
     set(handles.uipanel_spectrogram,'Visible','Off');
     set(handles.uipanel_diff,'Visible','Off');
     set(handles.uipanel_save,'Visible','Off');
+    set(handles.radiobutton_psd, 'Visible', 'Off');
 
 
 global x T fs t dt signal CHECK nakladkowanie lw initial_t RODZAJ;
