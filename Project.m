@@ -320,7 +320,7 @@ T=time;
 t=0:dt:T;
 t=t(1:length(t)-1);
 initial_t = t;
-
+x= x';
 signal = x;
 
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
@@ -353,7 +353,7 @@ function pushbutton_file_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_file (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global x T fs t dt signal initial_t nakladkowanie, lw;
+global x T fs t dt signal initial_t nakladkowanie lw;
 
 [FileName,PathName] = uigetfile('*.wav','Select a .wav file');
 [y,Faudio] = audioread([PathName FileName]);
@@ -374,6 +374,7 @@ dt=1/fs;
 t=0:dt:T;
 t=t(1:length(t));
 initial_t = t;
+x = x';
 signal = x;
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
 

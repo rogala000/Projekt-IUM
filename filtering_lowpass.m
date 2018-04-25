@@ -1,8 +1,9 @@
 function [Xfilt,t] = filtering_lowpass(x,Fs, t, T, stopband)
 
 % dt=1/Fs;
-df=1/T;
 
+df=1/T;
+T = length(t)/Fs;
 
 % f=0:df:Fs/2;
 % N = size(x);

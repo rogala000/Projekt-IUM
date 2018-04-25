@@ -15,7 +15,7 @@ elseif strcmp(view,'radiobutton_psd')
     xlabel('Frequency [Hz]')
     ylabel('Amplitude [ ]')
     elseif strcmp(view,'radiobutton_fft')
-    [amp,f] = transformata_fft2(signal,fs,T);
+    [amp,f] = transformata_fft(signal,fs,T);
     handles.axes1
     plot(f,amp)
     title('FFT')
