@@ -44,6 +44,7 @@ A=A';
 [F,T]=meshgrid(0:df:fs/2,1/fs:1/fs:length(x)/fs);
 title('Spectrogram')
 rozmiar = size(T);
+
 A=A(1:rozmiar(1), 1:rozmiar(2));
 
 h=surface(F,T,A);

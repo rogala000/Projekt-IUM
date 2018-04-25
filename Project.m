@@ -22,7 +22,7 @@ function varargout = Project(varargin)
 
 % Edit the above text to modify the response to help Project
 
-% Last Modified by GUIDE v2.5 11-Apr-2018 15:56:21
+% Last Modified by GUIDE v2.5 25-Apr-2018 17:57:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -67,10 +67,12 @@ guidata(hObject, handles);
     set(handles.radiobutton_highpass, 'Value', 0);
     set(handles.radiobutton_bandpass, 'Value', 0);
     set(handles.uipanel_spectrogram,'Visible','Off');
+    set(handles.uipanel_diff,'Visible','Off');
 
 
-global x T fs t dt signal CHECK nakladkowanie lw;
+global x T fs t dt signal CHECK nakladkowanie lw initial_t RODZAJ;
 nakladkowanie = 50;
+RODZAJ = 1;
 lw = 50;
 zoom 'on'
 fs = 100;
@@ -79,6 +81,7 @@ dt = 1/fs;
 CHECK = 0;
 t=0:dt:T;
 x = sin(2*pi*10 * t) + 0.05 * t;
+initial_t = t;
 
 signal = x;
 
@@ -180,13 +183,11 @@ function pushbutton_int_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_int (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.axes1
-global t signal fs T;
-global view nakladkowanie lw;
-signal = cumtrapz(t,signal);
-signal = filtrowanie(signal,fs);
-signal(1:T/10*fs) = 0;
-rysuj(signal,t,fs,T,view, hObject, eventdata, handles,nakladkowanie, lw);
+global t signal fs T nakladkowanie lw;
+global view
+[signal, t] = calkowanie(signal, fs, t);
+rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
+
 
 
 % --- Executes on button press in pushbutton_diff.
@@ -194,8 +195,11 @@ function pushbutton_diff_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_diff (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.axes1
-imshow('placeholder.jpg')
+global t signal x fs T;
+global view
+    set(handles.uipanel_diff,'Visible','On');
+
+
 
 % --- Executes when selected object is changed in uibuttongroup_view.
 function uibuttongroup_view_SelectionChangedFcn(hObject, eventdata, handles)
@@ -245,9 +249,10 @@ function pushbutton_restore_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_restore (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global t signal x fs T;
-global view nakladkowanie lw;
+global t signal x fs T initial_t nakladkowanie lw;
+global view
 signal = x;
+t = initial_t;
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
 
 
@@ -279,7 +284,7 @@ function pushbutton_record_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_record (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global x T fs t dt signal;
+global x T fs t dt signal initial_t nakladkowanie lw;
 
 time = str2num(handles.edit_duration.String);
 Fs = str2num(handles.popupmenu_f.String);
@@ -296,10 +301,11 @@ dt = 1/fs;
 T=time;
 t=0:dt:T;
 t=t(1:length(t)-1);
+initial_t = t;
 
 signal = x;
 
-plot(t,signal);
+rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
 
 
 function edit_duration_Callback(hObject, eventdata, handles)
@@ -329,7 +335,7 @@ function pushbutton_file_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_file (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global x T fs t dt signal;
+global x T fs t dt signal initial_t nakladkowanie, lw;
 
 [FileName,PathName] = uigetfile('*.wav','Select a .wav file');
 [y,Faudio] = audioread([PathName FileName]);
@@ -349,8 +355,10 @@ dt=1/fs;
 
 t=0:dt:T;
 t=t(1:length(t));
-
+initial_t = t;
 signal = x;
+rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
+
 
 
 % --- Executes on button press in pushbutton_play.
@@ -457,3 +465,61 @@ set(handles.uipanel_spectrogram,'Visible','Off');
     nakladkowanie = str2num(handles.edit_overlap.String);
     lw = lw * T / 100;
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
+
+
+% --- Executes on button press in pushbutton_diff_execute.
+function pushbutton_diff_execute_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_diff_execute (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global t signal x fs T;
+global view nakladkowanie lw RODZAJ;
+
+signal = rozniczkowanie(signal, fs, t, RODZAJ);
+rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
+    set(handles.uipanel_diff,'Visible','Off');
+
+
+
+% --- Executes on button press in radiobutton_diff_left.
+function radiobutton_diff_left_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton_diff_left (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton_diff_left
+
+
+% --- Executes on button press in radiobutton_diff_center.
+function radiobutton_diff_center_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton_diff_center (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton_diff_center
+
+
+% --- Executes on button press in radiobutton_diff_right.
+function radiobutton_diff_right_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton_diff_right (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton_diff_right
+
+
+% --- Executes when selected object is changed in uibuttongroup_diff.
+function uibuttongroup_diff_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in uibuttongroup_diff 
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global RODZAJ
+
+type = get(eventdata.NewValue, 'Tag');
+if strcmp(type,'radiobutton_diff_left')
+    RODZAJ = 1;
+elseif strcmp(type,'radiobutton_diff_left')
+    RODZAJ = 2;
+elseif strcmp(type,'radiobutton_diff_left')
+    RODZAJ = 3;
+end
