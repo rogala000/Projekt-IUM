@@ -198,6 +198,9 @@ function pushbutton_diff_Callback(hObject, eventdata, handles)
 global t signal x fs T;
 global view
     set(handles.uipanel_diff,'Visible','On');
+    set(handles.uipanel_filter,'Visible','Off');
+    set(handles.uipanel_spectrogram,'Visible','Off');
+
 
 
 
@@ -210,6 +213,8 @@ view = get(eventdata.NewValue, 'Tag');
 if strcmp(view,'radiobutton_spectrogram')
     set(handles.uipanel_spectrogram,'Visible','On');
         set(handles.uipanel_filter,'Visible','Off');
+        set(handles.uipanel_diff,'Visible','Off');
+
 else
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles,nakladkowanie, lw);
 end
@@ -225,6 +230,7 @@ function uibuttongroup_filtering_SelectionChangedFcn(hObject, eventdata, handles
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.uipanel_filter,'Visible','On');
 set(handles.uipanel_spectrogram,'Visible','Off');
+set(handles.uipanel_diff,'Visible','Off');
 
 type = get(eventdata.NewValue, 'Tag');
 if strcmp(type,'radiobutton_lowpass')
