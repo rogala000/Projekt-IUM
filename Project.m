@@ -22,7 +22,7 @@ function varargout = Project(varargin)
 
 % Edit the above text to modify the response to help Project
 
-% Last Modified by GUIDE v2.5 25-Apr-2018 17:57:26
+% Last Modified by GUIDE v2.5 25-Apr-2018 18:22:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,6 +68,7 @@ guidata(hObject, handles);
     set(handles.radiobutton_bandpass, 'Value', 0);
     set(handles.uipanel_spectrogram,'Visible','Off');
     set(handles.uipanel_diff,'Visible','Off');
+    set(handles.uipanel_save,'Visible','Off');
 
 
 global x T fs t dt signal CHECK nakladkowanie lw initial_t RODZAJ;
@@ -106,7 +107,7 @@ function pushbutton_save_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_save (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+set(handles.uipanel_save,'Visible','On');
 
 
 function edit1_Callback(hObject, eventdata, handles)
@@ -529,3 +530,38 @@ elseif strcmp(type,'radiobutton_diff_left')
 elseif strcmp(type,'radiobutton_diff_left')
     RODZAJ = 3;
 end
+
+
+
+function edit_filename_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_filename (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_filename as text
+%        str2double(get(hObject,'String')) returns contents of edit_filename as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_filename_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_filename (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_save2.
+function pushbutton_save2_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_save2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global signal fs
+filename = (handles.edit_filename.String);
+filename = [filename '.wav'];
+audiowrite(filename,signal, fs);
+set(handles.uipanel_save,'Visible','Off');

@@ -22,7 +22,7 @@ function varargout = Project(varargin)
 
 % Edit the above text to modify the response to help Project
 
-% Last Modified by GUIDE v2.5 25-Apr-2018 17:57:26
+% Last Modified by GUIDE v2.5 25-Apr-2018 18:22:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,10 +68,12 @@ guidata(hObject, handles);
     set(handles.radiobutton_bandpass, 'Value', 0);
     set(handles.uipanel_spectrogram,'Visible','Off');
     set(handles.uipanel_diff,'Visible','Off');
+    set(handles.uipanel_save,'Visible','Off');
 
 
-global x T fs t dt signal CHECK nakladkowanie lw initial_t;
+global x T fs t dt signal CHECK nakladkowanie lw initial_t RODZAJ;
 nakladkowanie = 50;
+RODZAJ = 1;
 lw = 50;
 zoom 'on'
 fs = 100;
@@ -105,7 +107,7 @@ function pushbutton_save_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_save (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+set(handles.uipanel_save,'Visible','On');
 
 
 function edit1_Callback(hObject, eventdata, handles)
@@ -182,10 +184,10 @@ function pushbutton_int_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_int (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global t signal fs T;
+global t signal fs T nakladkowanie lw;
 global view
 [signal, t] = calkowanie(signal, fs, t);
-rysuj(signal,t,fs,T,view, hObject, eventdata, handles);
+rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
 
 
 
@@ -197,6 +199,9 @@ function pushbutton_diff_Callback(hObject, eventdata, handles)
 global t signal x fs T;
 global view
     set(handles.uipanel_diff,'Visible','On');
+    set(handles.uipanel_filter,'Visible','Off');
+    set(handles.uipanel_spectrogram,'Visible','Off');
+
 
 
 
@@ -209,6 +214,8 @@ view = get(eventdata.NewValue, 'Tag');
 if strcmp(view,'radiobutton_spectrogram')
     set(handles.uipanel_spectrogram,'Visible','On');
         set(handles.uipanel_filter,'Visible','Off');
+        set(handles.uipanel_diff,'Visible','Off');
+
 else
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles,nakladkowanie, lw);
 end
@@ -224,6 +231,7 @@ function uibuttongroup_filtering_SelectionChangedFcn(hObject, eventdata, handles
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.uipanel_filter,'Visible','On');
 set(handles.uipanel_spectrogram,'Visible','Off');
+set(handles.uipanel_diff,'Visible','Off');
 
 type = get(eventdata.NewValue, 'Tag');
 if strcmp(type,'radiobutton_lowpass')
@@ -334,7 +342,7 @@ function pushbutton_file_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_file (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global x T fs t dt signal initial_t;
+global x T fs t dt signal initial_t nakladkowanie, lw;
 
 [FileName,PathName] = uigetfile('*.wav','Select a .wav file');
 [y,Faudio] = audioread([PathName FileName]);
@@ -475,7 +483,7 @@ global t signal x fs T;
 global view nakladkowanie lw RODZAJ;
 
 signal = rozniczkowanie(signal, fs, t, RODZAJ);
-rysuj(signal,t,fs,T,view, hObject, eventdata, handles);
+rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
     set(handles.uipanel_diff,'Visible','Off');
 
 
@@ -513,3 +521,46 @@ function uibuttongroup_diff_SelectionChangedFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global RODZAJ
+
+type = get(eventdata.NewValue, 'Tag');
+if strcmp(type,'radiobutton_diff_left')
+    RODZAJ = 1;
+elseif strcmp(type,'radiobutton_diff_left')
+    RODZAJ = 2;
+elseif strcmp(type,'radiobutton_diff_left')
+    RODZAJ = 3;
+end
+
+
+
+function edit_filename_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_filename (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_filename as text
+%        str2double(get(hObject,'String')) returns contents of edit_filename as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_filename_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_filename (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_save2.
+function pushbutton_save2_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_save2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global signal fs
+filename = (handles.edit_filename.String);
+save(filename,[signal, fs]);
+set(handles.uipanel_save,'Visible','Off');
