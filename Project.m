@@ -77,7 +77,7 @@ RODZAJ = 1;
 lw = 50;
 zoom 'on'
 fs = 100;
-T = 100;
+T = 10;
 dt = 1/fs;
 CHECK = 0;
 t=0:dt:T;
@@ -185,7 +185,7 @@ function pushbutton_detrend_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global t signal fs T nakladkowanie lw;
 global view
-signal = detrending(signal);
+    [signal,t] = filtering_highpass(signal,fs, t, T, 1);
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles,nakladkowanie, lw);
 
 % --- Executes on button press in pushbutton_int.
