@@ -160,13 +160,22 @@ function pushbutton_filter_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_filter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-handles.axes1
-imshow('placeholder.jpg')
-    set(handles.radiobutton_lowpass, 'Value', 0);
-    set(handles.radiobutton_highpass, 'Value', 0);
-    set(handles.radiobutton_bandpass, 'Value', 0);
-    set(handles.uipanel_filter,'Visible','Off');
+global t signal x fs T;
+global view nakladkowanie lw filtertype;
+type = filtertype;
+if strcmp(type,'radiobutton_lowpass')
+    stopband = str2num(handles.edit1.String);
+    [signal,t] = filtering_lowpass(signal,fs, t, T, stopband);
+elseif strcmp(type,'radiobutton_highpass')
+    passband = str2num(handles.edit1.String);
+    [signal,t] = filtering_highpass(signal,fs, t, T, passband);
+elseif strcmp(type,'radiobutton_bandpass')
+    passband = str2num(handles.edit2.String);
+    stopband = str2num(handles.edit1.String);
+    [signal,t] = filtering_passband(signal,fs, t, T, passband, stopband);
+end
+set(handles.uipanel_filter,'Visible','Off');
+rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
 
 
 % --- Executes on button press in pushbutton_detrend.
@@ -229,6 +238,7 @@ function uibuttongroup_filtering_SelectionChangedFcn(hObject, eventdata, handles
 % hObject    handle to the selected object in uibuttongroup_filtering 
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global filtertype
 set(handles.uipanel_filter,'Visible','On');
 set(handles.uipanel_spectrogram,'Visible','Off');
 set(handles.uipanel_diff,'Visible','Off');
@@ -238,17 +248,18 @@ if strcmp(type,'radiobutton_lowpass')
     set(handles.text2,'Visible','Off');
     set(handles.edit2,'Visible','Off');
     set(handles.text1,'String','Stopband frequency');
+    filtertype = 'radiobutton_lowpass'
 elseif strcmp(type,'radiobutton_highpass')
     set(handles.text2,'Visible','Off');
     set(handles.edit2,'Visible','Off');
     set(handles.text1,'String','Passband frequency');
-
+    filtertype = 'radiobutton_highpass';
 elseif strcmp(type,'radiobutton_bandpass')
     set(handles.text2,'Visible','On');
     set(handles.edit2,'Visible','On');
-    set(handles.text1,'String','Passband frequency');
-    set(handles.text2,'String','Stopband frequency');
-
+    set(handles.text1,'String','Stopband frequency');
+    set(handles.text2,'String','Passband frequency');
+    filtertype = 'radiobutton_bandpass';
 end
 
 % --- Executes on button press in pushbutton_restore.
@@ -520,7 +531,7 @@ function uibuttongroup_diff_SelectionChangedFcn(hObject, eventdata, handles)
 % hObject    handle to the selected object in uibuttongroup_diff 
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global RODZAJ
+global RODZAJ 
 
 type = get(eventdata.NewValue, 'Tag');
 if strcmp(type,'radiobutton_diff_left')

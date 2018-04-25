@@ -26,7 +26,7 @@ amp = abs(amp);
 filtr = zeros(1,length(amp));
 % piki = find(amp>100);
 filtr( 1: stopband / df)=1;
-filtr(length(filtr) - stopband / df : length(filtr)) = 1;
+filtr(length(filtr) - stopband / df : length(filtr)) = 0;
 %yyaxis right
 %hold on
 %plot(f,filtr,'r')

@@ -9,13 +9,13 @@ if strcmp(view,'radiobutton_tv')
 elseif strcmp(view,'radiobutton_psd')
     handles.axes1
      window = hann(2*fs);
-     [amp,f]=pwelch(signal,window,[],[],fs)
+     [amp,f]=pwelch(signal,window,[],[],fs);
     plot(f,amp)
     title('PSD')
     xlabel('Frequency [Hz]')
     ylabel('Amplitude [ ]')
     elseif strcmp(view,'radiobutton_fft')
-    [amp,f] = transformata_fft(signal,fs,T);
+    [amp,f] = transformata_fft2(signal,fs,T);
     handles.axes1
     plot(f,amp)
     title('FFT')

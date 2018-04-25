@@ -160,15 +160,27 @@ function pushbutton_filter_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_filter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global t signal x fs T;
+global view nakladkowanie lw;
 
-handles.axes1
-imshow('placeholder.jpg')
-    set(handles.radiobutton_lowpass, 'Value', 0);
-    set(handles.radiobutton_highpass, 'Value', 0);
-    set(handles.radiobutton_bandpass, 'Value', 0);
+type = get(eventdata.NewValue, 'Tag');
+if strcmp(type,'radiobutton_lowpass')
+    stopband = str2num(handles.edit1.String);
+    [signal,t] = filtering_lowpass(x,fs, t, T, stopband);
+elseif strcmp(type,'radiobutton_highpass')
+    passband = str2num(handles.edit1.String);
+    [signal,t] = filtering_highpass(x,fs, t, T, passband);
+elseif strcmp(type,'radiobutton_bandpass')
+    
+    
+%     set(handles.text2,'Visible','On');
+%     set(handles.edit2,'Visible','On');
+%     set(handles.text1,'String','Passband frequency');
+%     set(handles.text2,'String','Stopband frequency');
+
     set(handles.uipanel_filter,'Visible','Off');
 
-
+end
 % --- Executes on button press in pushbutton_detrend.
 function pushbutton_detrend_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_detrend (see GCBO)
@@ -562,5 +574,6 @@ function pushbutton_save2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global signal fs
 filename = (handles.edit_filename.String);
-save(filename,[signal, fs]);
+filename = [filename '.wav'];
+audiowrite(filename,signal, fs);
 set(handles.uipanel_save,'Visible','Off');
