@@ -4,9 +4,9 @@ df=1/T;
 
 amp = fft(x);
 amp = abs(amp);
-%filtr = ones(1,length(amp));
 
 if strcmp(type, 'radiobutton_window_rectangle')
+    filtr = ones(1,length(amp));
     filtr( 1: passband / df)=0;
     filtr(length(filtr) - passband / df : length(filtr)) = 0;
 

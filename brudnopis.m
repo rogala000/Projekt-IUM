@@ -39,12 +39,9 @@ f=0:df:Fs;
 % % % % % % % % % % %yyaxis left
 % % % % % % % % % % %plot(f,amp)
 % piki = find(amp>100);
-filtr = zeros(1,length(amp));
-window = hann(length(filtr)/20);
-filtr(passband : passband + length(window)-1) = window;
-
-filtr(length(filtr) - passband - length(window) : length(filtr) - passband-1) = window;
-filtr(passband + length(window)/2 :  length(filtr) - passband - length(window)/2) = 1;
+filtr = ones(1,length(amp));
+    filtr( 1: passband / df)=0;
+    filtr(length(filtr) - passband / df : length(filtr)) = 0;
 
 
 filtr2 = ones(1,length(filtr));
