@@ -6,7 +6,7 @@ clc
 Fs=1000;
 T=1;
 stopband = 100;
-passband = 150;
+passband = 100;
 f1=25;
 f2=140;
 f3=350;
@@ -39,34 +39,23 @@ f=0:df:Fs;
 % % % % % % % % % % %yyaxis left
 % % % % % % % % % % %plot(f,amp)
 % piki = find(amp>100);
-
-
 filtr = zeros(1,length(amp));
-filtr( stopband / df : passband / df)=1;
-filtr(length(filtr) - passband / df : length(filtr) - stopband ) = 1;
+window = hann(length(filtr)/20);
+filtr(passband : passband + length(window)-1) = window;
 
-%yyaxis right
-%hold on
-%plot(f,filtr,'r')
-%plot(f,amp(1:N/2+1))
-% xlabel('Czestotliwosc [Hz]')
-% ylabel('Amplituda [ ]')
+filtr(length(filtr) - passband - length(window) : length(filtr) - passband-1) = window;
+filtr(passband + length(window)/2 :  length(filtr) - passband - length(window)/2) = 1;
+
+
+filtr2 = ones(1,length(filtr));
+
+filtr2( stopband: length(filtr) - stopband) =1-  hann ( length(stopband: length(filtr) - stopband));
+
 [hAx,hLine1,hLine2] = plotyy(f,amp,f,filtr)
-% set(hLine2,'Color','r')
 Xfilt=real(ifft(fft(x).*filtr));
-% figure
-% subplot(2,1,1)
-% plot(t,Xfilt)
+figure,
 
-% xlabel('Czas [s]')
-% ylabel('Amplituda [ ]')
-% [amp,f] = transformata_fft2(Xfilt,Fs,T);
-% subplot(2,1,2)
-% plot(f,amp)
-% xlabel('Czestotliwosc [Hz]')
-% ylabel('Amplituda [ ]')
-% 
+ plotyy(f,amp,f,filtr2)
 
-%Wyjœcia
 t;
 Xfilt;

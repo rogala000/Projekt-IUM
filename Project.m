@@ -22,7 +22,7 @@ function varargout = Project(varargin)
 
 % Edit the above text to modify the response to help Project
 
-% Last Modified by GUIDE v2.5 07-May-2018 14:11:04
+% Last Modified by GUIDE v2.5 07-May-2018 14:32:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -70,11 +70,14 @@ guidata(hObject, handles);
     set(handles.uipanel_diff,'Visible','Off');
     set(handles.uipanel_save,'Visible','Off');
     set(handles.radiobutton_psd, 'Visible', 'Off');
-
+    set(handles.uibuttongroup_filter_window, 'Visible', 'Off');
 
 global x T fs t dt signal CHECK nakladkowanie lw initial_t RODZAJ int_type;
 nakladkowanie = 50;
 RODZAJ = 1;
+global window_type;
+
+window_type = 'radiobutton_window_rectangle';
 lw = 50;
 zoom 'on'
 fs = 100;
@@ -163,19 +166,23 @@ function pushbutton_filter_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global t signal x fs T;
 global view nakladkowanie lw filtertype;
+global window_type;
 type = filtertype;
+
 if strcmp(type,'radiobutton_lowpass')
     stopband = str2num(handles.edit1.String);
-    [signal,t] = filtering_lowpass(signal,fs, t, T, stopband);
+    [signal,t] = filtering_lowpass(signal,fs, t, T, stopband, window_type);
 elseif strcmp(type,'radiobutton_highpass')
     passband = str2num(handles.edit1.String);
-    [signal,t] = filtering_highpass(signal,fs, t, T, passband);
+    [signal,t] = filtering_highpass(signal,fs, t, T, passband, window_type);
 elseif strcmp(type,'radiobutton_bandpass')
     passband = str2num(handles.edit2.String);
     stopband = str2num(handles.edit1.String);
-    [signal,t] = filtering_passband(signal,fs, t, T, passband, stopband);
+    [signal,t] = filtering_passband(signal,fs, t, T, passband, stopband, window_type);
 end
 set(handles.uipanel_filter,'Visible','Off');
+set(handles.uibuttongroup_filter_window, 'Visible', 'Off');
+
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
 
 
@@ -214,6 +221,7 @@ global view
     set(handles.uipanel_diff,'Visible','On');
     set(handles.uipanel_filter,'Visible','Off');
     set(handles.uipanel_spectrogram,'Visible','Off');
+    set(handles.uibuttongroup_filter_window, 'Visible', 'Off');
 
 
 
@@ -228,6 +236,7 @@ if strcmp(view,'radiobutton_spectrogram')
     set(handles.uipanel_spectrogram,'Visible','On');
         set(handles.uipanel_filter,'Visible','Off');
         set(handles.uipanel_diff,'Visible','Off');
+        set(handles.uibuttongroup_filter_window, 'Visible', 'Off');
 
 else
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles,nakladkowanie, lw);
@@ -246,6 +255,8 @@ global filtertype
 set(handles.uipanel_filter,'Visible','On');
 set(handles.uipanel_spectrogram,'Visible','Off');
 set(handles.uipanel_diff,'Visible','Off');
+set(handles.uibuttongroup_filter_window, 'Visible', 'On');
+set(handles.uibuttongroup_filter_window, 'Visible', 'On');
 
 type = get(eventdata.NewValue, 'Tag');
 if strcmp(type,'radiobutton_lowpass')
@@ -613,3 +624,12 @@ function uibuttongroup_int_SelectionChangedFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global int_type
 int_type = get(eventdata.NewValue, 'Tag');
+
+
+% --- Executes when selected object is changed in uibuttongroup_filter_window.
+function uibuttongroup_filter_window_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in uibuttongroup_filter_window 
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global window_type
+window_type = get(eventdata.NewValue, 'Tag');
