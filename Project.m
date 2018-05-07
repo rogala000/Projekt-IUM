@@ -22,7 +22,7 @@ function varargout = Project(varargin)
 
 % Edit the above text to modify the response to help Project
 
-% Last Modified by GUIDE v2.5 25-Apr-2018 18:22:04
+% Last Modified by GUIDE v2.5 07-May-2018 14:11:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -72,7 +72,7 @@ guidata(hObject, handles);
     set(handles.radiobutton_psd, 'Visible', 'Off');
 
 
-global x T fs t dt signal CHECK nakladkowanie lw initial_t RODZAJ;
+global x T fs t dt signal CHECK nakladkowanie lw initial_t RODZAJ int_type;
 nakladkowanie = 50;
 RODZAJ = 1;
 lw = 50;
@@ -84,7 +84,7 @@ CHECK = 0;
 t=0:dt:T;
 x = sin(2*pi*10 * t) + 0.05 * t;
 initial_t = t;
-
+int_type = 'radiobutton_rectangles';
 signal = x;
 
 
@@ -186,7 +186,9 @@ function pushbutton_detrend_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global t signal fs T nakladkowanie lw;
 global view
-    [signal,t] = filtering_highpass(signal,fs, t, T, 1);
+order = str2num(handles.edit_detrend.String);
+
+    [signal] = kwadraty(signal,t,order);
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles,nakladkowanie, lw);
 
 % --- Executes on button press in pushbutton_int.
@@ -196,7 +198,8 @@ function pushbutton_int_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global t signal fs T nakladkowanie lw;
 global view
-[signal, t] = calkowanie(signal, fs, t);
+global int_type
+[signal, t] = calkowanie(signal, fs, t, int_type);
 rysuj(signal,t,fs,T,view, hObject, eventdata, handles, nakladkowanie, lw);
 
 
@@ -578,3 +581,35 @@ filename = (handles.edit_filename.String);
 filename = [filename '.wav'];
 audiowrite(filename,signal, fs);
 set(handles.uipanel_save,'Visible','Off');
+
+
+
+function edit_detrend_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_detrend (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_detrend as text
+%        str2double(get(hObject,'String')) returns contents of edit_detrend as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_detrend_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_detrend (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes when selected object is changed in uibuttongroup_int.
+function uibuttongroup_int_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in uibuttongroup_int 
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global int_type
+int_type = get(eventdata.NewValue, 'Tag');
