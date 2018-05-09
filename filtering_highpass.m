@@ -12,7 +12,7 @@ if strcmp(type, 'radiobutton_window_rectangle')
 
 elseif strcmp(type, 'radiobutton_window_hann')
 filtr = zeros(1,length(amp));
-window = hann(length(filtr)/20);
+window = hannwin(length(filtr)/20);
 filtr(passband /df : passband /df + length(window)-1) = window;
 
 filtr(length(filtr) - passband /df - length(window) : length(filtr) - passband /df -1) = window;
@@ -20,7 +20,7 @@ filtr(passband /df + length(window)/2 :  length(filtr) - passband / df - length(
 elseif strcmp(type, 'radiobutton_window_gauss')
 
 filtr = zeros(1,length(amp));
-window = gausswin(length(filtr)/20);
+window = wingauss(length(filtr)/20);
 filtr(passband /df : passband /df + length(window)-1) = window;
 
 filtr(length(filtr) - passband /df - length(window) : length(filtr) - passband /df -1) = window;
