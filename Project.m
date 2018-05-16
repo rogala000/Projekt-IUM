@@ -388,6 +388,10 @@ dt=1/fs;
 
 t=0:dt:T;
 t=t(1:length(t));
+
+if(max(size(t))>max(size(x)))
+    t = t(1:max(size(x)));
+end
 initial_t = t;
 x = x';
 signal = x;
